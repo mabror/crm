@@ -8,6 +8,7 @@ from . models import Lead, Agent
 from .forms import LeadForm, CustomUserCreationForm
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from agents.mixins import OrganisorAndLoginRequiredMixin
 
 
 
@@ -26,17 +27,51 @@ class LandingPageView(TemplateView):
 
 class LeadListView(LoginRequiredMixin, ListView):
     template_name = 'leads/home.html'
-    queryset = Lead.objects.all()
     context_object_name = "leads"
+
+
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organisation
+        if user.is_organisor:
+            queryset = Lead.objects.filter(
+                organisation=user.userprofile, 
+                agent__isnull=False
+            )
+        else:
+            queryset = Lead.objects.filter(
+                organisation=user.agent.organisation, 
+                agent__isnull=False
+            )
+            # filter for the agent that is logged in
+            queryset = queryset.filter(agent__user=user)
+        return queryset
+
 
 
 class LeadDetailView(LoginRequiredMixin, DetailView):
     template_name = 'leads/lead_detail.html'
-    queryset = Lead.objects.all()
     context_object_name = "lead"
 
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organisation
+        if user.is_organisor:
+            queryset = Lead.objects.filter(
+                organisation=user.userprofile, 
+                agent__isnull=False
+            )
+        else:
+            queryset = Lead.objects.filter(
+                organisation=user.agent.organisation, 
+                agent__isnull=False
+            )
+            # filter for the agent that is logged in
+            queryset = queryset.filter(agent__user=user)
+        return queryset
 
-class LeadCreateView(LoginRequiredMixin, CreateView):
+
+class LeadCreateView(OrganisorAndLoginRequiredMixin, CreateView):
     template_name = "leads/lead_create.html"
     form_class = LeadForm
 
@@ -52,19 +87,30 @@ class LeadCreateView(LoginRequiredMixin, CreateView):
         )
         return super(LeadCreateView, self).form_valid(form)
 
-class LeadUpdateView(LoginRequiredMixin, UpdateView):
+class LeadUpdateView(OrganisorAndLoginRequiredMixin, UpdateView):
     template_name = "leads/lead_update.html"
-    queryset = Lead.objects.all()
     form_class = LeadForm
     
     def get_success_url(self):
         return reverse("leads:lead-list")
 
 
-class LeadDeleteView(LoginRequiredMixin, DeleteView):
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organisation
+        return Lead.objects.filter(organisation=user.userprofile)
+
+
+
+
+class LeadDeleteView(OrganisorAndLoginRequiredMixin, DeleteView):
     template_name = "leads/lead_delete.html"
-    queryset = Lead.objects.all()
 
     def get_success_url(self):
         return reverse("leads:lead-list")
+
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organisation
+        return Lead.objects.filter(organisation=user.userprofile)
 
