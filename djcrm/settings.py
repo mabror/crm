@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     # "crispy_tailwind",
     'theme',
+    'agents',
 ]
 
 MIDDLEWARE = [
@@ -151,3 +152,5 @@ TAILWIND_APP_NAME = 'theme'
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 LOGIN_REDIRECT_URL = "/leads"
+
+LOGIN_URL = "/login"
