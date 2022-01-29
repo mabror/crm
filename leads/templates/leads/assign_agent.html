@@ -1,24 +1,20 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% comment %} {% load tailwind_filters %} {% endcomment %}
 
 {% block content %}
 
 <div class="max-w-lg mx-auto">
-
-    <div class="py-5 border-b border-gray-200">
-        <a class="hover:text-blue-500" href="#">Don't have an account?</a>
+    <a class="hover:text-blue-500" href="{% url 'leads:lead-list' %}">Go back to leads</a>
+    <div class="py-5 border-t border-gray-200">
+        <h1 class="text-4xl text-gray-800">Assign an agent to this lead</h1>
     </div>
-
     <form method="post" class="mt-5">
         {% csrf_token %}
         {{ form.as_p }}
         <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
-            Login
+            Submit
         </button>
     </form>
-    <div class="py-5 border-t border-gray-200 mt-5">
-        <a class="hover:text-blue-500" href="{% url 'reset-password' %}">Forgot password?</a>
-    </div>
 </div>
 
 {% endblock content %}
