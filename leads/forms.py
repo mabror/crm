@@ -2,7 +2,7 @@ from django import forms
 from django.forms import fields
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import Lead, Agent
+from .models import Lead, Agent, Category
 
 User = get_user_model()
 
@@ -14,6 +14,9 @@ class LeadForm(forms.ModelForm):
             'last_name',
             'age',
             'agent',
+            'description',
+            'phone_number',
+            'email',
         )
 
 class CustomUserCreationForm(UserCreationForm):
@@ -32,3 +35,28 @@ class AssignAgentForm(forms.Form):
         agents = Agent.objects.filter(organisation=request.user.userprofile)
         super(AssignAgentForm, self).__init__(*args, **kwargs)
         self.fields["agent"].queryset = agents
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Lead
+        fields = (
+            'first_name',
+            'last_name',
+            'age',
+            'category',
+        )
+
+class CategoryModelForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = (
+            'name',
+        )
+
+class LeadCategoryUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Lead
+        fields = (
+            'category',
+        )
