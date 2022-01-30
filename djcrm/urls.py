@@ -10,13 +10,14 @@ from django.contrib.auth.views import (LoginView,
 
 
 from django.urls import path, include
-from leads.views import LandingPageView, SignUpView
+from leads.views import LandingPageView, SignUpView, DashboardView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', LandingPageView.as_view(), name='landing'),
     path('leads/', include('leads.urls', namespace="leads")),
     path('agents/', include('agents.urls', namespace="agents")),
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('login/', LoginView.as_view(), name="login"),
     path('logout/', LogoutView.as_view(), name="logout"),
     path('signup/', SignUpView.as_view(), name="signup"),
